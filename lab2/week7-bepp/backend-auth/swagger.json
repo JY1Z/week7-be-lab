@@ -1,0 +1,287 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "User and Job API",
+      "description": "API for managing users and jobs with authentication."
+    },
+    "host": "localhost:4000",
+    "basePath": "/api",
+    "schemes": ["http"],
+    "paths": {
+      "/users/signup": {
+        "post": {
+          "summary": "Sign up a new user",
+          "description": "Create a new user account.",
+          "tags": ["Users"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "User object to create",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "User created successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid user data"
+            }
+          }
+        }
+      },
+      "/users/login": {
+        "post": {
+          "summary": "Login a user",
+          "description": "Authenticate a user and generate a token.",
+          "tags": ["Users"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "credentials",
+              "description": "User credentials",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User authenticated successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "token": { "type": "string" }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid credentials"
+            }
+          }
+        }
+      },
+      "/jobs": {
+        "get": {
+          "summary": "Get all jobs",
+          "description": "Retrieve all job listings.",
+          "tags": ["Jobs"],
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of jobs",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Job"
+                }
+              }
+            },
+            "500": {
+              "description": "Server error"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new job",
+          "description": "Post a new job listing.",
+          "tags": ["Jobs"],
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "job",
+              "description": "Job object to create",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Job"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Job created successfully",
+              "schema": {
+                "$ref": "#/definitions/Job"
+              }
+            }
+          }
+        }
+      },
+      "/jobs/{jobId}": {
+        "get": {
+          "summary": "Get a job by ID",
+          "description": "Retrieve a single job by its ID.",
+          "tags": ["Jobs"],
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Job retrieved successfully",
+              "schema": {
+                "$ref": "#/definitions/Job"
+              }
+            },
+            "404": {
+              "description": "Job not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a job",
+          "description": "Update an existing job by its ID.",
+          "tags": ["Jobs"],
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "body",
+              "name": "job",
+              "description": "Updated job object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Job"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Job updated successfully",
+              "schema": {
+                "$ref": "#/definitions/Job"
+              }
+            },
+            "404": {
+              "description": "Job not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a job",
+          "description": "Delete an existing job by its ID.",
+          "tags": ["Jobs"],
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Job deleted successfully"
+            },
+            "404": {
+              "description": "Job not found"
+            }
+          }
+        }
+      }
+    },
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Bearer token for authentication"
+      }
+    },
+    "definitions": {
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password",
+          "phone_number",
+          "gender",
+          "date_of_birth",
+          "membership_status"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "phone_number": { "type": "string" },
+          "gender": { "type": "string" },
+          "date_of_birth": { "type": "string", "format": "date" },
+          "membership_status": { "type": "string" }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "required": ["title", "type", "description", "company"],
+        "properties": {
+          "title": { "type": "string" },
+          "type": { "type": "string" },
+          "description": { "type": "string" },
+          "company": {
+            "type": "object",
+            "required": ["name", "contactEmail", "contactPhone"],
+            "properties": {
+              "name": { "type": "string" },
+              "contactEmail": { "type": "string" },
+              "contactPhone": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+  
